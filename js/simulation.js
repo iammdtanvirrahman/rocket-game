@@ -1,4 +1,3 @@
-```javascript
 export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
 
     root.innerHTML = `
@@ -14,15 +13,15 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
         ">
 
             <div id="hud" style="
-                position:absolute;
-                top:10px;
-                left:10px;
-                z-index:10;
-                background:rgba(0,0,0,0.5);
-                padding:10px 14px;
-                border-radius:10px;
-                font-family:monospace;
-                line-height:1.6;
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                z-index: 10;
+                background: rgba(0,0,0,0.5);
+                padding: 10px 14px;
+                border-radius: 10px;
+                font-family: monospace;
+                line-height: 1.6;
             ">
                 Altitude: <span id="alt">0</span> m<br>
                 Speed: <span id="spd">0</span> m/s<br>
@@ -31,27 +30,27 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
             </div>
 
             <div id="countdown" style="
-                position:absolute;
-                inset:0;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:100px;
-                font-weight:bold;
-                color:#6cf0ff;
-                text-shadow:0 0 20px #00e5ff;
-                opacity:0;
-                z-index:20;
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 100px;
+                font-weight: bold;
+                color: #6cf0ff;
+                text-shadow: 0 0 20px #00e5ff;
+                opacity: 0;
+                z-index: 20;
             "></div>
 
             <div id="rocket" style="
-                position:absolute;
-                left:50%;
-                bottom:90px;
-                transform:translateX(-50%);
-                width:80px;
-                height:150px;
-                z-index:5;
+                position: absolute;
+                left: 50%;
+                bottom: 90px;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 150px;
+                z-index: 5;
                 transition: transform 0.1s linear;
             ">
 
@@ -65,63 +64,63 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
                 </svg>
 
                 <div id="flame" style="
-                    position:absolute;
-                    left:50%;
-                    bottom:-34px;
-                    transform:translateX(-50%);
-                    width:26px;
-                    height:54px;
-                    background:linear-gradient(to bottom, #fde68a, #f97316, #dc2626);
-                    clip-path:polygon(50% 0%, 0% 100%, 100% 100%);
-                    filter:drop-shadow(0 0 10px #fb923c);
-                    animation:flame 0.12s infinite alternate;
-                    display:none;
+                    position: absolute;
+                    left: 50%;
+                    bottom: -34px;
+                    transform: translateX(-50%);
+                    width: 26px;
+                    height: 54px;
+                    background: linear-gradient(to bottom, #fde68a, #f97316, #dc2626);
+                    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+                    filter: drop-shadow(0 0 10px #fb923c);
+                    animation: flame 0.12s infinite alternate;
+                    display: none;
                 "></div>
             </div>
 
             <div id="smoke-layer" style="
-                position:absolute;
-                inset:0;
-                pointer-events:none;
-                overflow:hidden;
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                overflow: hidden;
             "></div>
 
             <div style="
-                position:absolute;
-                left:0;
-                right:0;
-                bottom:0;
-                height:90px;
-                background:#064e3b;
-                border-top:4px solid #10b981;
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 90px;
+                background: #064e3b;
+                border-top: 4px solid #10b981;
             "></div>
 
             <div style="
-                position:absolute;
-                left:50%;
-                bottom:78px;
-                transform:translateX(-50%);
-                width:160px;
-                height:18px;
-                background:#334155;
-                border-radius:10px;
+                position: absolute;
+                left: 50%;
+                bottom: 78px;
+                transform: translateX(-50%);
+                width: 160px;
+                height: 18px;
+                background: #334155;
+                border-radius: 10px;
             "></div>
 
             <div style="
-                position:absolute;
-                left:50%;
-                bottom:96px;
-                transform:translateX(-50%);
-                width:12px;
-                height:70px;
-                background:#475569;
-                border-radius:8px;
+                position: absolute;
+                left: 50%;
+                bottom: 96px;
+                transform: translateX(-50%);
+                width: 12px;
+                height: 70px;
+                background: #475569;
+                border-radius: 8px;
             "></div>
         </div>
 
-        <div style="margin-top:18px; display:flex; gap:12px; justify-content:center;">
+        <div style="margin-top: 18px; display: flex; gap: 12px; justify-content: center;">
             <button id="launchBtn" class="part-btn">🚀 Launch Rocket</button>
-            <button id="resetBtn" class="part-btn" style="background:linear-gradient(135deg,#dc2626,#ef4444)">🔄 Reset</button>
+            <button id="resetBtn" class="part-btn" style="background: linear-gradient(135deg, #dc2626, #ef4444);">🔄 Reset</button>
         </div>
     `;
 
@@ -206,8 +205,7 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
             altitude += velocity * 0.8;
             rocketOffset += velocity * 0.35;
 
-            rocket.style.transform =
-                `translateX(-50%) translateY(-${rocketOffset}px)`;
+            rocket.style.transform = `translateX(-50%) translateY(-${rocketOffset}px)`;
 
             createSmoke();
 
@@ -220,8 +218,7 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
             }
 
             if (altitude > 2500) {
-                rocket.parentElement.style.background =
-                    'linear-gradient(to bottom, #020617, #000000)';
+                rocket.parentElement.style.background = 'linear-gradient(to bottom, #020617, #000000)';
             }
 
             requestAnimationFrame(simulationLoop);
@@ -247,7 +244,6 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
 
     updateHUD('Ready');
 
-    // Add flame animation once
     if (!document.getElementById('rocket-flame-style')) {
         const style = document.createElement('style');
         style.id = 'rocket-flame-style';
@@ -266,4 +262,3 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
         document.head.appendChild(style);
     }
 }
-```
