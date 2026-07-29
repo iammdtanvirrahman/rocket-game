@@ -23,10 +23,13 @@ function bodySVG() {
                 <stop offset="100%" stop-color="#8b97a8"/>
             </linearGradient>
         </defs>
+
         <rect x="18" y="6" width="84" height="168" rx="22"
               fill="url(#bodyGrad)" stroke="#ffffff" stroke-opacity="0.35"/>
+
         <circle cx="60" cy="54" r="18" fill="#5bc0ff"/>
         <circle cx="60" cy="54" r="8" fill="#dff4ff"/>
+
         <rect x="28" y="94" width="64" height="8" rx="4"
               fill="#64748b" opacity="0.75"/>
     </svg>`;
@@ -46,6 +49,7 @@ function engineSVG() {
                 <stop offset="100%" stop-color="#ff7a18"/>
             </radialGradient>
         </defs>
+
         <path d="M24 10 H96 L82 64 L38 64 Z" fill="url(#engineGrad)"/>
         <path d="M46 64 Q60 112 74 64 Z" fill="url(#flameGrad)"/>
     </svg>`;
@@ -57,7 +61,7 @@ export function getRocketStats() {
     const engine = rocketParts.filter(p => p === 'engine').length;
 
     return {
-        parts: rocketParts,
+        parts: [...rocketParts],
         stages: body,
         height: nose * 2 + body * 5 + engine * 3,
         weight: nose * 120 + body * 850 + engine * 420,
@@ -74,13 +78,20 @@ export function createBuilder(root, onLaunchReady) {
             <button class="part-btn" data-part="nose">🔺 Add Nose Cone</button>
             <button class="part-btn" data-part="body">⬜ Add Fuel Stage</button>
             <button class="part-btn" data-part="engine">⚙️ Add Main Engine</button>
-            <button class="part-btn" id="clear-rocket" style="background: linear-gradient(135deg, #dc2626, #ef4444);">🗑️ Clear Rocket</button>
+
+            <button class="part-btn" id="clear-rocket"
+                style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                🗑️ Clear Rocket
+            </button>
         </div>
 
         <div class="rocket-preview">
             <h3>🚀 Live Preview</h3>
+
             <div class="rocket-stack" id="rocket-preview">
-                <div class="launch-placeholder">Build your first rocket 🚀</div>
+                <div class="launch-placeholder">
+                    Build your first rocket 🚀
+                </div>
             </div>
         </div>
 
@@ -91,7 +102,8 @@ export function createBuilder(root, onLaunchReady) {
             <div>Thrust: <span>0 kN</span></div>
         </div>
 
-        <button class="part-btn" id="proceed-launch-btn" style="margin-top: 15px; background: linear-gradient(135deg, #059669, #10b981); width: 100%;" disabled>
+        <button class="part-btn" id="proceed-launch-btn"
+            style="margin-top: 15px; background: linear-gradient(135deg, #059669, #10b981); width: 100%;" disabled>
             🚀 Proceed to Launch Pad
         </button>
     `;
@@ -101,25 +113,33 @@ export function createBuilder(root, onLaunchReady) {
     const launchBtn = root.querySelector('#proceed-launch-btn');
 
     function renderRocket() {
+        preview.innerHTML = '';
+
         if (rocketParts.length === 0) {
-            preview.innerHTML = `<div class="launch-placeholder">Build your first rocket 🚀</div>`;
+            preview.innerHTML = `
+                <div class="launch-placeholder">
+                    Build your first rocket 🚀
+                </div>`;
+
             launchBtn.disabled = true;
         } else {
-            preview.innerHTML = '';
             rocketParts.forEach(part => {
                 const wrapper = document.createElement('div');
+
                 if (part === 'nose') wrapper.innerHTML = noseSVG();
                 if (part === 'body') wrapper.innerHTML = bodySVG();
                 if (part === 'engine') wrapper.innerHTML = engineSVG();
-                preview.prepend(wrapper.firstElementChild);
+
+                if (wrapper.firstElementChild) {
+                    preview.prepend(wrapper.firstElementChild);
+                }
             });
 
-            // Enable launch if an engine is present
-            const hasEngine = rocketParts.includes('engine');
-            launchBtn.disabled = !hasEngine;
+            launchBtn.disabled = !rocketParts.includes('engine');
         }
 
         const stats = getRocketStats();
+
         info.innerHTML = `
             <div>Stages: <span>${stats.stages}</span></div>
             <div>Height: <span>${stats.height} m</span></div>
@@ -141,6 +161,12 @@ export function createBuilder(root, onLaunchReady) {
     });
 
     launchBtn.addEventListener('click', () => {
-        if (onLaunchReady) onLaunchReady(getRocketStats());
+        const stats = getRocketStats();
+
+        if (stats.parts.length > 0 && stats.parts.includes('engine')) {
+            onLaunchReady?.(stats);
+        }
     });
+
+    renderRocket();
 }
