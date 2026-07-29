@@ -1,0 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #0b1020;
+    color: white;
+    min-height: 100vh;
+}
+
+.topbar {
+    background: #121933;
+    padding: 18px;
+    text-align: center;
+    border-bottom: 2px solid #1f2a50;
+}
+
+.app-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+#builder-root,
+#simulation-root {
+    background: #121933;
+    border-radius: 16px;
+    padding: 20px;
+    min-height: 80vh;
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+.part-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.part-btn {
+    background: #1d2a55;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.part-btn:hover {
+    background: #2d4488;
+}
+
+.rocket-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 500px;
+    margin-top: 20px;
+}
+
+.rocket-part {
+    width: 80px;
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.nose {
+    height: 60px;
+    background: #ff5757;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.body {
+    height: 100px;
+    background: #d9d9d9;
+    color: black;
+    border-radius: 10px;
+}
+
+.engine {
+    height: 50px;
+    background: #666;
+    border-radius: 0 0 12px 12px;
+}
