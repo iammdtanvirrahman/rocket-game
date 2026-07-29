@@ -1,15 +1,16 @@
-import { createBuilder, getRocketStats } from './builder.js';
+import { createBuilder } from './builder.js';
 import { createSimulation } from './simulation.js';
 
 const builderRoot = document.getElementById('builder-root');
 const simulationRoot = document.getElementById('simulation-root');
 
-function showSimulation(stats) {
+// Load builder
+createBuilder(builderRoot, (stats) => {
     createSimulation(simulationRoot, stats);
-}
+});
 
-// Create builder
-createBuilder(builderRoot, showSimulation);
-
-// Initial simulation screen
-showSimulation(getRocketStats());
+// Load initial simulation screen
+createSimulation(simulationRoot, {
+    parts: [],
+    fuel: 100
+});
