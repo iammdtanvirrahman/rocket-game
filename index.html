@@ -1,11 +1,18 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rocket Builder Game</title>
+
+    <title>🚀 Rocket Builder Game</title>
+
     <link rel="stylesheet" href="style.css" />
+
+    <!-- Prevent favicon 404 warning on GitHub Pages -->
+    <link rel="icon" href="data:," />
 </head>
+
 <body>
 
     <header class="topbar">
@@ -13,13 +20,17 @@
     </header>
 
     <main class="app-container">
-        <!-- Builder UI will be injected here -->
+
+        <!-- Rocket Builder Panel -->
         <section id="builder-root"></section>
 
-        <!-- Simulation area -->
+        <!-- Mission Control / Simulation Panel -->
         <section id="simulation-root"></section>
+
     </main>
 
     <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
+```
