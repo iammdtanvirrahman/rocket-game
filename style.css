@@ -2,94 +2,180 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 body {
-    background: #0b1020;
-    color: white;
     min-height: 100vh;
+    color: white;
+    background: radial-gradient(circle at top, #14213d 0%, #090b15 70%);
+    overflow: hidden;
+}
+
+/* Animated stars */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px);
+    background-size: 60px 60px, 120px 120px;
+    background-position: 0 0, 30px 30px;
+    opacity: 0.25;
+    animation: starsMove 30s linear infinite;
+}
+
+@keyframes starsMove {
+    from { transform: translateY(0); }
+    to   { transform: translateY(120px); }
 }
 
 .topbar {
-    background: #121933;
+    position: relative;
+    z-index: 2;
     padding: 18px;
     text-align: center;
-    border-bottom: 2px solid #1f2a50;
+    background: rgba(10, 15, 30, 0.85);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.topbar h1 {
+    color: #6cf0ff;
+    text-shadow: 0 0 10px #00e5ff;
 }
 
 .app-container {
+    position: relative;
+    z-index: 2;
     display: grid;
     grid-template-columns: 320px 1fr;
     gap: 20px;
     padding: 20px;
+    height: calc(100vh - 80px);
 }
 
 #builder-root,
 #simulation-root {
-    background: #121933;
-    border-radius: 16px;
+    background: rgba(15, 20, 40, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.15);
+    border-radius: 20px;
     padding: 20px;
-    min-height: 80vh;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.08);
 }
 
 h2 {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
+    color: #7df9ff;
 }
 
 .part-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .part-btn {
-    background: #1d2a55;
-    color: white;
+    padding: 14px;
     border: none;
-    padding: 12px;
-    border-radius: 10px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    color: white;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.25s ease;
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.35);
 }
 
 .part-btn:hover {
-    background: #2d4488;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 0 24px rgba(96, 165, 250, 0.6);
 }
 
 .rocket-preview {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: flex-end;
-    height: 500px;
-    margin-top: 20px;
+    align-items: center;
+    padding-bottom: 30px;
+    position: relative;
+}
+
+/* Hangar floor */
+.rocket-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 240px;
+    height: 16px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(0,255,255,.7), rgba(0,255,255,0));
 }
 
 .rocket-part {
-    width: 80px;
-    margin: 2px 0;
+    width: 120px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 28px;
+    align-items: center;
+    margin: 3px 0;
+    transition: transform 0.2s ease;
+}
+
+.rocket-part:hover {
+    transform: scale(1.03);
 }
 
 .nose {
-    height: 60px;
-    background: #ff5757;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(to bottom, #ff8a80, #ff3b3b);
+    clip-path: polygon(50% 0%, 8% 100%, 92% 100%);
+    filter: drop-shadow(0 0 12px rgba(255, 80, 80, 0.65));
 }
 
 .body {
-    height: 100px;
-    background: #d9d9d9;
-    color: black;
-    border-radius: 10px;
+    width: 120px;
+    height: 150px;
+    border-radius: 20px;
+    background: linear-gradient(to right, #d1d5db, #f8fafc, #9ca3af);
+    border: 2px solid rgba(255,255,255,.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.body::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #60a5fa;
+    box-shadow: 0 0 14px rgba(96, 165, 250, 0.85);
 }
 
 .engine {
-    height: 50px;
-    background: #666;
-    border-radius: 0 0 12px 12px;
+    width: 100px;
+    height: 70px;
+    border-radius: 0 0 22px 22px;
+    background: linear-gradient(to bottom, #4b5563, #111827);
+    position: relative;
+}
+
+.engine::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 14px;
+    border-radius: 999px;
+    background: #f59e0b;
+    box-shadow: 0 0 16px #f59e0b;
 }
