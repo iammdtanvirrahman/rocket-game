@@ -79,13 +79,18 @@ export function createBuilder(root) {
             <button class="part-btn" id="clear-rocket">🗑️ Clear Rocket</button>
         </div>
 
-        <div class="rocket-preview">
-            <div class="rocket-stack" id="rocket-preview">
-                <div class="launch-placeholder">
-                    Build your first rocket 🚀
-                </div>
-            </div>
+        <div class="rocket-preview" style="margin-top: 25px;">
+    <h3 style="margin-bottom: 15px; color:#7df9ff;">🚀 Live Preview</h3>
+
+    <div class="rocket-stack" id="rocket-preview"
+         style="min-height: 350px;">
+
+        <div class="launch-placeholder">
+            Build your first rocket 🚀
         </div>
+
+    </div>
+</div>
 
         <div class="rocket-info" id="rocket-info">
             <div>Stages: <span>0</span></div>
