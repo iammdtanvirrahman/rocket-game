@@ -1,3 +1,5 @@
+// js/builder.js
+
 const rocketParts = [];
 const TOTAL_BUDGET = 10000;
 const COSTS = {
@@ -50,7 +52,7 @@ function engineSVG() {
     </svg>`;
 }
 
-// --- Stats & Logic ---
+// --- Dynamic Calculations ---
 export function getRocketStats() {
     const nose = rocketParts.filter(p => p === 'nose').length;
     const body = rocketParts.filter(p => p === 'body').length;
@@ -77,7 +79,7 @@ export function createBuilder(root, onLaunchReady) {
     root.innerHTML = `
         <h2>🛠️ Rocket Assembly Hangar</h2>
 
-        <!-- Budget HUD -->
+        <!-- Budget Monitor -->
         <div style="background: rgba(0,0,0,0.4); padding: 14px; border-radius: 12px; margin-bottom: 18px; border: 1px solid rgba(0,255,255,0.2);">
             <div style="display: flex; justify-content: space-between; font-size: 1.1rem;">
                 <span>Budget: <strong style="color: #4ade80;">£10,000</strong></span>
@@ -87,32 +89,32 @@ export function createBuilder(root, onLaunchReady) {
 
         <div class="part-list">
             <button class="part-btn" data-part="nose" id="btn-nose">🔺 Nose Cone (£500) <span id="nose-count">[0/1]</span></button>
-            <button class="part-btn" data-part="body" id="btn-body">⬜ Fuel Stage (£2k) <span id="body-count">[0/5]</span></button>
-            <button class="part-btn" data-part="engine" id="btn-engine">⚙️ Main Engine (£5k) <span id="engine-count">[0/1]</span></button>
+            <button class="part-btn" data-part="body" id="btn-body">⬜ Fuel Stage (£2,000) <span id="body-count">[0/5]</span></button>
+            <button class="part-btn" data-part="engine" id="btn-engine">⚙️ Main Engine (£5,000) <span id="engine-count">[0/1]</span></button>
 
             <button class="part-btn" id="clear-rocket" style="background: linear-gradient(135deg, #dc2626, #ef4444); margin-top: 10px;">
                 🗑️ Clear Rocket
             </button>
         </div>
 
-        <!-- Live Preview -->
+        <!-- Live Visual Stack -->
         <div class="rocket-preview" style="box-shadow: inset 0 0 30px rgba(0,255,255,0.05); border: 1px solid rgba(0,255,255,0.15);">
             <h3>🚀 Live Preview</h3>
             <div class="rocket-stack" id="rocket-preview">
-                <div class="launch-placeholder">Build your first rocket 🚀</div>
+                <div class="launch-placeholder">Build your rocket to proceed 🚀</div>
             </div>
         </div>
 
         <div class="rocket-info" id="rocket-info">
-            <div>Stages: <span id="stat-stages">0 / 5</span></div>
-            <div>Height: <span id="stat-height">0 m</span></div>
-            <div>Weight: <span id="stat-weight">0 kg</span></div>
-            <div>Thrust: <span id="stat-thrust">0 kN</span></div>
+            <div>Fuel Stages: <span id="stat-stages">0 / 5</span></div>
+            <div>Total Height: <span id="stat-height">0 m</span></div>
+            <div>Total Weight: <span id="stat-weight">0 kg</span></div>
+            <div>Engine Thrust: <span id="stat-thrust">0 kN</span></div>
         </div>
 
-        <!-- Launch Validator Button -->
+        <!-- Validation Launch Button -->
         <button class="part-btn" id="proceed-launch-btn" style="margin-top: 18px; width: 100%; transition: 0.3s;" disabled>
-            ⚠️ Add Engine to Launch
+            ⚠️ Add Parts to Start
         </button>
     `;
 
@@ -123,21 +125,20 @@ export function createBuilder(root, onLaunchReady) {
     function renderRocket() {
         const stats = getRocketStats();
 
-        // Update Budget
+        // Budget Indicators
         remBudgetEl.textContent = '£' + stats.remainingBudget.toLocaleString();
         remBudgetEl.style.color = stats.remainingBudget < 2000 ? '#ef4444' : '#6cf0ff';
 
-        // Update Part Counts on Buttons
-        root.querySelector('#nose-count').textContent = \`[\${stats.noseCount}/1]\`;
-        root.querySelector('#body-count').textContent = \`[\${stats.bodyCount}/5]\`;
-        root.querySelector('#engine-count').textContent = \`[\${stats.engineCount}/1]\`;
+        // Update Part Counter Displays
+        root.querySelector('#nose-count').textContent = `[${stats.noseCount}/1]`;
+        root.querySelector('#body-count').textContent = `[${stats.bodyCount}/5]`;
+        root.querySelector('#engine-count').textContent = `[${stats.engineCount}/1]`;
 
-        // Render visual stack
+        // Render Stack SVG UI
         preview.innerHTML = '';
         if (rocketParts.length === 0) {
-            preview.innerHTML = \`<div class="launch-placeholder">Build your first rocket 🚀</div>\`;
+            preview.innerHTML = `<div class="launch-placeholder">Build your rocket to proceed 🚀</div>`;
         } else {
-            // Render from top to bottom logic
             rocketParts.forEach(part => {
                 const wrapper = document.createElement('div');
                 if (part === 'nose') wrapper.innerHTML = noseSVG();
@@ -149,25 +150,25 @@ export function createBuilder(root, onLaunchReady) {
             });
         }
 
-        // Update Stats UI
-        root.querySelector('#stat-stages').textContent = \`\${stats.stages} / 5\`;
-        root.querySelector('#stat-height').textContent = \`\${stats.height} m\`;
-        root.querySelector('#stat-weight').textContent = \`\${stats.weight} kg\`;
-        root.querySelector('#stat-thrust').textContent = \`\${stats.thrust} kN\`;
+        // Live Stats Update
+        root.querySelector('#stat-stages').textContent = `${stats.stages} / 5`;
+        root.querySelector('#stat-height').textContent = `${stats.height} m`;
+        root.querySelector('#stat-weight').textContent = `${stats.weight} kg`;
+        root.querySelector('#stat-thrust').textContent = `${stats.thrust} kN`;
 
-        // Launch Readiness Validation
-        if (stats.engineCount === 0) {
-            launchBtn.disabled = true;
-            launchBtn.style.background = '#475569';
-            launchBtn.textContent = '⚠️ Add Engine to Launch';
-        } else if (stats.noseCount === 0) {
+        // System Launch Validation State
+        if (stats.noseCount === 0) {
             launchBtn.disabled = true;
             launchBtn.style.background = '#475569';
             launchBtn.textContent = '⚠️ Add Nose Cone for Aerodynamics';
         } else if (stats.bodyCount === 0) {
             launchBtn.disabled = true;
             launchBtn.style.background = '#475569';
-            launchBtn.textContent = '⚠️ Add Fuel Stage';
+            launchBtn.textContent = '⚠️ Add at least 1 Fuel Stage';
+        } else if (stats.engineCount === 0) {
+            launchBtn.disabled = true;
+            launchBtn.style.background = '#475569';
+            launchBtn.textContent = '⚠️ Add Engine to Launch';
         } else {
             launchBtn.disabled = false;
             launchBtn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
@@ -175,19 +176,19 @@ export function createBuilder(root, onLaunchReady) {
         }
     }
 
-    // Add Part Handlers with Limits & Budget Checks
+    // Interactive Part Add Handling + Hard Limits
     root.querySelectorAll('.part-btn[data-part]').forEach(btn => {
         btn.addEventListener('click', () => {
             const part = btn.dataset.part;
             const stats = getRocketStats();
 
-            // Check Budget
+            // Budget Checks
             if (stats.remainingBudget < COSTS[part]) {
-                alert('❌ Not enough budget!');
+                alert('❌ Insufficient Budget!');
                 return;
             }
 
-            // Check Limits
+            // Assembly Part Limits
             if (part === 'nose' && stats.noseCount >= 1) {
                 alert('⚠️ Only 1 Nose Cone allowed!');
                 return;
@@ -201,7 +202,6 @@ export function createBuilder(root, onLaunchReady) {
                 return;
             }
 
-            // Add part if validation passes
             rocketParts.push(part);
             renderRocket();
         });
