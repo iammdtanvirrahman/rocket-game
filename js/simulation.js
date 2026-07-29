@@ -1,281 +1,243 @@
-
 ```javascript
-export function createSimulation(root, rocketStats = { parts: [], fuel: 100, thrust: 1200, weight: 1000 }) {
-    root.innerHTML = `
-        <h2>🌌 Mission Control & Launch Pad</h2>
+export function createSimulation(root, rocketStats = { parts: [], fuel: 100 }) {
 
-        <div id="sim-view" style="
+    root.innerHTML = `
+        <h2>🌌 Mission Control</h2>
+
+        <div style="
             position: relative;
             width: 100%;
-            height: calc(100% - 60px);
-            background: linear-gradient(to bottom, #020617, #0f172a);
+            height: 520px;
+            background: linear-gradient(to bottom, #0f172a, #020617);
             border-radius: 16px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         ">
 
-            <canvas id="simCanvas" style="
-                position: absolute;
-                inset: 0;
-                width: 100%;
-                height: 100%;
-            "></canvas>
-
-            <div id="telemetry" class="rocket-info" style="
-                position: absolute;
-                top: 15px;
-                left: 15px;
-                z-index: 10;
-                min-width: 240px;
+            <div id="hud" style="
+                position:absolute;
+                top:10px;
+                left:10px;
+                z-index:10;
+                background:rgba(0,0,0,0.5);
+                padding:10px 14px;
+                border-radius:10px;
+                font-family:monospace;
+                line-height:1.6;
             ">
-                <div>Altitude: <span id="tel-alt">0 m</span></div>
-                <div>Velocity: <span id="tel-vel">0 m/s</span></div>
-                <div>Fuel: <span id="tel-fuel">100%</span></div>
-                <div>Phase: <span id="tel-phase">Ready on Pad</span></div>
+                Altitude: <span id="alt">0</span> m<br>
+                Speed: <span id="spd">0</span> m/s<br>
+                Fuel: <span id="fuel">100</span>%<br>
+                Phase: <span id="phase">Ready</span>
             </div>
 
             <div id="countdown" style="
-                position: absolute;
-                inset: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 120px;
-                font-weight: bold;
-                color: #6cf0ff;
-                text-shadow: 0 0 20px #00e5ff;
-                z-index: 20;
-                opacity: 0;
-                pointer-events: none;
-            ">3</div>
+                position:absolute;
+                inset:0;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:100px;
+                font-weight:bold;
+                color:#6cf0ff;
+                text-shadow:0 0 20px #00e5ff;
+                opacity:0;
+                z-index:20;
+            "></div>
+
+            <div id="rocket" style="
+                position:absolute;
+                left:50%;
+                bottom:90px;
+                transform:translateX(-50%);
+                width:80px;
+                height:150px;
+                z-index:5;
+                transition: transform 0.1s linear;
+            ">
+
+                <svg viewBox="0 0 100 180" width="100%" height="100%">
+                    <polygon points="50,0 15,45 85,45" fill="#ef4444"/>
+                    <rect x="18" y="45" width="64" height="100" rx="18" fill="#e2e8f0"/>
+                    <circle cx="50" cy="78" r="12" fill="#38bdf8"/>
+                    <polygon points="18,125 0,165 18,158" fill="#64748b"/>
+                    <polygon points="82,125 100,165 82,158" fill="#64748b"/>
+                    <rect x="34" y="145" width="32" height="16" rx="6" fill="#475569"/>
+                </svg>
+
+                <div id="flame" style="
+                    position:absolute;
+                    left:50%;
+                    bottom:-34px;
+                    transform:translateX(-50%);
+                    width:26px;
+                    height:54px;
+                    background:linear-gradient(to bottom, #fde68a, #f97316, #dc2626);
+                    clip-path:polygon(50% 0%, 0% 100%, 100% 100%);
+                    filter:drop-shadow(0 0 10px #fb923c);
+                    animation:flame 0.12s infinite alternate;
+                    display:none;
+                "></div>
+            </div>
+
+            <div id="smoke-layer" style="
+                position:absolute;
+                inset:0;
+                pointer-events:none;
+                overflow:hidden;
+            "></div>
 
             <div style="
-                position: relative;
-                z-index: 10;
-                margin-top: auto;
-                padding: 20px;
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-                background: linear-gradient(to top, rgba(2,6,23,0.95), transparent);
-            ">
-                <button id="start-launch-btn" class="part-btn"
-                    style="background: linear-gradient(135deg, #2563eb, #1d4ed8); padding: 12px 24px;">
-                    🚀 Start Countdown
-                </button>
+                position:absolute;
+                left:0;
+                right:0;
+                bottom:0;
+                height:90px;
+                background:#064e3b;
+                border-top:4px solid #10b981;
+            "></div>
 
-                <button id="reset-btn" class="part-btn"
-                    style="background: linear-gradient(135deg, #dc2626, #ef4444); padding: 12px 24px;">
-                    🔄 Reset
-                </button>
-            </div>
+            <div style="
+                position:absolute;
+                left:50%;
+                bottom:78px;
+                transform:translateX(-50%);
+                width:160px;
+                height:18px;
+                background:#334155;
+                border-radius:10px;
+            "></div>
+
+            <div style="
+                position:absolute;
+                left:50%;
+                bottom:96px;
+                transform:translateX(-50%);
+                width:12px;
+                height:70px;
+                background:#475569;
+                border-radius:8px;
+            "></div>
+        </div>
+
+        <div style="margin-top:18px; display:flex; gap:12px; justify-content:center;">
+            <button id="launchBtn" class="part-btn">🚀 Launch Rocket</button>
+            <button id="resetBtn" class="part-btn" style="background:linear-gradient(135deg,#dc2626,#ef4444)">🔄 Reset</button>
         </div>
     `;
 
-    const canvas = root.querySelector('#simCanvas');
-    const ctx = canvas.getContext('2d');
+    const rocket = root.querySelector('#rocket');
+    const flame = root.querySelector('#flame');
+    const smokeLayer = root.querySelector('#smoke-layer');
+    const countdown = root.querySelector('#countdown');
 
-    function resizeCanvas() {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = canvas.parentElement.clientHeight;
-    }
+    const altEl = root.querySelector('#alt');
+    const spdEl = root.querySelector('#spd');
+    const fuelEl = root.querySelector('#fuel');
+    const phaseEl = root.querySelector('#phase');
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // ===== Telemetry =====
-
-    const telAlt = root.querySelector('#tel-alt');
-    const telVel = root.querySelector('#tel-vel');
-    const telFuel = root.querySelector('#tel-fuel');
-    const telPhase = root.querySelector('#tel-phase');
-
-    // ===== State =====
+    const launchBtn = root.querySelector('#launchBtn');
+    const resetBtn = root.querySelector('#resetBtn');
 
     let altitude = 0;
     let velocity = 0;
     let fuel = rocketStats.fuel || 100;
     let launched = false;
-    let particles = [];
-    let rocketY = 0;
+    let rocketOffset = 0;
 
-    const startBtn = root.querySelector('#start-launch-btn');
-    const resetBtn = root.querySelector('#reset-btn');
-    const countdownEl = root.querySelector('#countdown');
-
-    function updateTelemetry(phase) {
-        telAlt.textContent = `${Math.floor(altitude)} m`;
-        telVel.textContent = `${Math.floor(velocity)} m/s`;
-        telFuel.textContent = `${Math.max(0, Math.floor(fuel))}%`;
-        telPhase.textContent = phase;
+    function updateHUD(phase) {
+        altEl.textContent = Math.floor(altitude);
+        spdEl.textContent = Math.floor(velocity);
+        fuelEl.textContent = Math.max(0, Math.floor(fuel));
+        phaseEl.textContent = phase;
     }
 
-    // ===== Countdown =====
+    function createSmoke() {
+        const smoke = document.createElement('div');
+
+        smoke.style.position = 'absolute';
+        smoke.style.left = `calc(50% + ${(Math.random() - 0.5) * 40}px)`;
+        smoke.style.bottom = '100px';
+        smoke.style.width = `${20 + Math.random() * 20}px`;
+        smoke.style.height = smoke.style.width;
+        smoke.style.borderRadius = '50%';
+        smoke.style.background = 'rgba(200,200,200,0.45)';
+        smoke.style.filter = 'blur(2px)';
+        smoke.style.transition = 'all 1.2s linear';
+
+        smokeLayer.appendChild(smoke);
+
+        requestAnimationFrame(() => {
+            smoke.style.transform = `translate(${(Math.random() - 0.5) * 60}px, -${80 + Math.random() * 120}px) scale(2.4)`;
+            smoke.style.opacity = '0';
+        });
+
+        setTimeout(() => smoke.remove(), 1300);
+    }
 
     async function startCountdown() {
-        countdownEl.style.opacity = '1';
+        countdown.style.opacity = '1';
 
         for (let i = 3; i >= 1; i--) {
-            countdownEl.textContent = i;
+            countdown.textContent = i;
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        countdownEl.textContent = '🚀';
-        await new Promise(r => setTimeout(r, 800));
+        countdown.textContent = '🚀';
+        await new Promise(r => setTimeout(r, 700));
 
-        countdownEl.style.opacity = '0';
+        countdown.style.opacity = '0';
 
         launch();
     }
 
-    // ===== Launch =====
-
     function launch() {
         launched = true;
-        updateTelemetry('Ignition 🔥');
-        requestAnimationFrame(updateSimulation);
+        flame.style.display = 'block';
+        updateHUD('Ignition 🔥');
+        requestAnimationFrame(simulationLoop);
     }
 
-    // ===== Physics =====
-
-    function updateSimulation() {
+    function simulationLoop() {
         if (!launched) return;
 
         if (fuel > 0) {
-            fuel -= 0.4;
-            velocity += 0.6;
-            altitude += velocity;
-            rocketY += velocity * 0.3;
+            fuel -= 0.35;
+            velocity += 0.55;
+            altitude += velocity * 0.8;
+            rocketOffset += velocity * 0.35;
+
+            rocket.style.transform =
+                `translateX(-50%) translateY(-${rocketOffset}px)`;
+
+            createSmoke();
 
             if (altitude < 1000) {
-                updateTelemetry('Ascending 🚀');
-            } else if (altitude < 5000) {
-                updateTelemetry('Upper Atmosphere 🛰️');
+                updateHUD('Ascending 🚀');
+            } else if (altitude < 4000) {
+                updateHUD('Upper Atmosphere 🛰️');
             } else {
-                updateTelemetry('Space Flight 🌌');
+                updateHUD('Space Flight 🌌');
             }
 
-            createParticles();
+            if (altitude > 2500) {
+                rocket.parentElement.style.background =
+                    'linear-gradient(to bottom, #020617, #000000)';
+            }
+
+            requestAnimationFrame(simulationLoop);
         } else {
-            velocity *= 0.98;
-            altitude += velocity;
-
-            updateTelemetry('Coasting 🛰️');
-
-            if (velocity < 0.1) {
-                launched = false;
-                updateTelemetry('Orbit Achieved 🌌');
-            }
-        }
-
-        renderScene();
-
-        if (launched) {
-            requestAnimationFrame(updateSimulation);
+            flame.style.display = 'none';
+            updateHUD('Fuel Empty ⛽');
         }
     }
 
-    // ===== Particles =====
-
-    function createParticles() {
-        for (let i = 0; i < 5; i++) {
-            particles.push({
-                x: canvas.width / 2 + (Math.random() - 0.5) * 20,
-                y: canvas.height - 120,
-                size: Math.random() * 10 + 4,
-                alpha: 1,
-                speed: Math.random() * 4 + 2
-            });
-        }
-    }
-
-    // ===== Render =====
-
-    function renderScene() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Sky
-        const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
-
-        if (altitude < 3000) {
-            sky.addColorStop(0, '#0f172a');
-            sky.addColorStop(1, '#1e293b');
-        } else {
-            sky.addColorStop(0, '#000000');
-            sky.addColorStop(1, '#0f172a');
-        }
-
-        ctx.fillStyle = sky;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Ground
-        ctx.fillStyle = '#064e3b';
-        ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
-
-        // Launch pad
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(canvas.width / 2 - 60, canvas.height - 100, 120, 20);
-
-        // Rocket
-        const x = canvas.width / 2;
-        const y = canvas.height - 150 - rocketY;
-
-        ctx.save();
-        ctx.translate(x, y);
-
-        // Body
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(-18, -50, 36, 90);
-
-        // Nose
-        ctx.fillStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.moveTo(0, -80);
-        ctx.lineTo(-18, -50);
-        ctx.lineTo(18, -50);
-        ctx.closePath();
-        ctx.fill();
-
-        // Window
-        ctx.fillStyle = '#38bdf8';
-        ctx.beginPath();
-        ctx.arc(0, -20, 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-
-        // Fire particles
-        for (let i = particles.length - 1; i >= 0; i--) {
-            const p = particles[i];
-
-            p.y += p.speed;
-            p.alpha -= 0.03;
-
-            if (p.alpha <= 0) {
-                particles.splice(i, 1);
-                continue;
-            }
-
-            ctx.save();
-            ctx.globalAlpha = p.alpha;
-            ctx.fillStyle = '#f97316';
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-    }
-
-    // ===== Buttons =====
-
-    startBtn.addEventListener('click', () => {
+    launchBtn.addEventListener('click', () => {
         if (!rocketStats.parts || !rocketStats.parts.includes('engine')) {
             alert('⚠️ Build a rocket with an engine first!');
             return;
         }
 
-        startBtn.disabled = true;
+        launchBtn.disabled = true;
         startCountdown();
     });
 
@@ -283,7 +245,25 @@ export function createSimulation(root, rocketStats = { parts: [], fuel: 100, thr
         createSimulation(root, rocketStats);
     });
 
-    updateTelemetry('Ready on Pad');
-    renderScene();
+    updateHUD('Ready');
+
+    // Add flame animation once
+    if (!document.getElementById('rocket-flame-style')) {
+        const style = document.createElement('style');
+        style.id = 'rocket-flame-style';
+        style.textContent = `
+            @keyframes flame {
+                from {
+                    transform: translateX(-50%) scaleY(1);
+                    height: 46px;
+                }
+                to {
+                    transform: translateX(-50%) scaleY(1.18);
+                    height: 60px;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
 ```
