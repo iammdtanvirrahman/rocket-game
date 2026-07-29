@@ -1,8 +1,13 @@
+```css
+/* =====================================
+   ROCKET BUILDER GAME - FULL CSS
+===================================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
@@ -12,7 +17,8 @@ body {
     overflow: hidden;
 }
 
-/* Animated stars */
+/* ===== Animated Stars ===== */
+
 body::before {
     content: '';
     position: fixed;
@@ -24,6 +30,7 @@ body::before {
     background-position: 0 0, 30px 30px;
     opacity: 0.25;
     animation: starsMove 30s linear infinite;
+    pointer-events: none;
 }
 
 @keyframes starsMove {
@@ -31,61 +38,74 @@ body::before {
     to   { transform: translateY(120px); }
 }
 
+/* ===== Top Bar ===== */
+
 .topbar {
     position: relative;
     z-index: 2;
     padding: 18px;
     text-align: center;
-    background: rgba(10, 15, 30, 0.85);
+    background: rgba(10, 15, 30, 0.9);
     border-bottom: 1px solid rgba(0, 255, 255, 0.25);
     backdrop-filter: blur(10px);
 }
 
 .topbar h1 {
     color: #6cf0ff;
+    font-size: 2.2rem;
     text-shadow: 0 0 10px #00e5ff;
 }
+
+/* ===== Main Layout ===== */
 
 .app-container {
     position: relative;
     z-index: 2;
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 340px 1fr;
     gap: 20px;
     padding: 20px;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 90px);
 }
+
+/* ===== Panels ===== */
 
 #builder-root,
 #simulation-root {
-    background: rgba(15, 20, 40, 0.8);
+    background: rgba(15, 20, 40, 0.82);
     border: 1px solid rgba(0, 255, 255, 0.15);
     border-radius: 20px;
-    padding: 20px;
+    padding: 22px;
     backdrop-filter: blur(14px);
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.08);
+    min-height: calc(100vh - 130px);
+    overflow-y: auto;
 }
 
 h2 {
     margin-bottom: 18px;
     color: #7df9ff;
+    font-size: 1.8rem;
 }
+
+/* ===== Buttons ===== */
 
 .part-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .part-btn {
-    padding: 14px;
+    padding: 15px;
     border: none;
     border-radius: 14px;
     background: linear-gradient(135deg, #1d4ed8, #2563eb);
     color: white;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.25s ease;
+    transition: all 0.25s ease;
     box-shadow: 0 0 15px rgba(37, 99, 235, 0.35);
 }
 
@@ -94,121 +114,91 @@ h2 {
     box-shadow: 0 0 24px rgba(96, 165, 250, 0.6);
 }
 
+.part-btn:active {
+    transform: scale(0.98);
+}
+
+/* ===== Rocket Preview ===== */
+
 .rocket-preview {
-    height: 100%;
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.rocket-preview h3 {
+    margin-bottom: 18px;
+    color: #7df9ff;
+    text-align: center;
+}
+
+.rocket-stack {
+    min-height: 380px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    padding-bottom: 30px;
+    gap: 0;
+    padding: 25px 0;
     position: relative;
 }
 
-/* Hangar floor */
-.rocket-preview::after {
+/* Hangar floor glow */
+
+.rocket-stack::after {
     content: '';
     position: absolute;
     bottom: 0;
-    width: 240px;
-    height: 16px;
+    width: 220px;
+    height: 18px;
     border-radius: 999px;
-    background: radial-gradient(circle, rgba(0,255,255,.7), rgba(0,255,255,0));
+    background: radial-gradient(circle,
+        rgba(0,255,255,.7),
+        rgba(0,255,255,0));
 }
 
-.rocket-part {
-    width: 120px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 3px 0;
-    transition: transform 0.2s ease;
-}
-
-.rocket-part:hover {
-    transform: scale(1.03);
-}
-
-.nose {
-    width: 90px;
-    height: 90px;
-    background: linear-gradient(to bottom, #ff8a80, #ff3b3b);
-    clip-path: polygon(50% 0%, 8% 100%, 92% 100%);
-    filter: drop-shadow(0 0 12px rgba(255, 80, 80, 0.65));
-}
-
-.body {
-    width: 120px;
-    height: 150px;
-    border-radius: 20px;
-    background: linear-gradient(to right, #d1d5db, #f8fafc, #9ca3af);
-    border: 2px solid rgba(255,255,255,.35);
-    position: relative;
-    overflow: hidden;
-}
-
-.body::before {
-    content: '';
-    position: absolute;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #60a5fa;
-    box-shadow: 0 0 14px rgba(96, 165, 250, 0.85);
-}
-
-.engine {
-    width: 100px;
-    height: 70px;
-    border-radius: 0 0 22px 22px;
-    background: linear-gradient(to bottom, #4b5563, #111827);
-    position: relative;
-}
-
-.engine::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 38px;
-    height: 14px;
-    border-radius: 999px;
-    background: #f59e0b;
-    box-shadow: 0 0 16px #f59e0b;
-}
-/* ===== SVG Rocket Graphics ===== */
-
-.rocket-stack {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0;
-    padding-bottom: 20px;
-}
+/* ===== SVG Rocket ===== */
 
 .rocket-svg {
-    width: 140px;
+    width: 130px;
     display: block;
-    filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
+    margin: -6px 0;
+    filter: drop-shadow(0 0 14px rgba(255,255,255,0.15));
     transition: transform 0.2s ease;
 }
 
 .rocket-svg:hover {
-    transform: scale(1.03);
+    transform: scale(1.04);
 }
 
+/* ===== Placeholder ===== */
+
+.launch-placeholder {
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    padding: 50px 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* ===== Rocket Stats ===== */
+
 .rocket-info {
-    margin-top: 20px;
-    padding: 14px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.05);
+    margin-top: 22px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.rocket-info div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .rocket-info span {
@@ -216,12 +206,78 @@ h2 {
     font-weight: bold;
 }
 
-.launch-placeholder {
+/* ===== Mission Control ===== */
+
+#simulation-root {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: rgba(255,255,255,0.55);
-    font-size: 18px;
-    text-align: center;
+    flex-direction: column;
 }
+
+.launch-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+    color: rgba(255,255,255,0.75);
+}
+
+.launch-screen .rocket-icon {
+    font-size: 90px;
+    filter: drop-shadow(0 0 20px rgba(255,255,255,0.25));
+}
+
+.launch-screen h3 {
+    color: #7df9ff;
+    font-size: 1.5rem;
+}
+
+/* ===== Scrollbar ===== */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0,255,255,0.35);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,255,255,0.55);
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+
+    body {
+        overflow: auto;
+    }
+
+    .app-container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    #builder-root,
+    #simulation-root {
+        min-height: auto;
+    }
+
+    .rocket-stack {
+        min-height: 300px;
+    }
+
+    .topbar h1 {
+        font-size: 1.6rem;
+    }
+}
+```
