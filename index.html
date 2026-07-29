@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Builder & Space Odyssey</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #374151;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+        }
+
+        .part-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .part-btn {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .part-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background-color: #1f2937;
+        }
+
+        .part-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stats-box {
+            background-color: var(--bg-color);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sim-container {
+            position: relative;
+            background-color: #020617;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            min-height: 500px;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .sim-ui {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to top, rgba(2, 6, 23, 0.9), transparent);
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .flight-telemetry {
+            position: relative;
+            z-index: 10;
+            top: 15px;
+            left: 15px;
+            align-self: flex-start;
+            background: rgba(17, 24, 39, 0.8);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .assembly-stack {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 4px;
+            padding: 20px;
+            min-height: 200px;
+            justify-content: flex-start;
+        }
+
+        .rocket-block {
+            width: 100px;
+            height: 35px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .block-capsule { background-color: #ef4444; border-radius: 20px 20px 4px 4px; }
+        .block-fuel { background-color: #3b82f6; }
+        .block-engine { background-color: #6b7280; border-radius: 4px 4px 8px 8px; }
+
+        .log-box {
+            margin-top: 15px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            width: 100%;
+            max-width: 1200px;
+            height: 100px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>AeroCraft: Space Odyssey</h1>
+        <p>Build your rocket, launch into orbit, and travel through deep space!</p>
+    </header>
+
+    <div class="container">
+        <!-- Builder Panel -->
+        <div class="panel" id="builder-panel">
+            <h2>Rocket Assembly</h2>
+            <div class="assembly-stack" id="assembly-stack">
+                <span style="color: var(--text-muted); font-size: 0.9rem;" id="empty-notice">Your rocket is empty. Add parts below!</span>
+            </div>
+
+            <h2>Available Parts</h2>
+            <div class="part-list">
+                <button class="part-btn" onclick="addPart('capsule')">
+                    <span>Command Capsule</span>
+                    <small>+$500 Mass</small>
+                </button>
+                <button class="part-btn" onclick="addPart('fuel')">
+                    <span>Fuel Tank</span>
+                    <small>+Fuel / +Weight</small>
+                </button>
+                <button class="part-btn" onclick="addPart('engine')">
+                    <span>Rocket Engine</span>
+                    <small>+Thrust</small>
+                </button>
+            </div>
+
+            <div class="stats-box">
+                <div>Total Mass: <span id="stat-mass">0</span> t</div>
+                <div>Thrust Power: <span id="stat-thrust">0</span> kN</div>
+                <div>Fuel Capacity: <span id="stat-fuel">0</span> units</div>
+            </div>
+
+            <button class="btn" id="launch-btn" onclick="startLaunch()" disabled>Proceed to Launch Pad</button>
+            <button class="btn btn-danger" onclick="clearRocket()" style="padding: 6px; font-size: 0.8rem;">Reset Rocket</button>
+        </div>
+
+        <!-- Simulation Panel -->
+        <div class="sim-container">
+            <canvas id="simCanvas"></canvas>
+            
+            <div class="flight-telemetry" id="telemetry" style="display: none;">
+                <div>Altitude: <span id="tel-alt">0</span> m</div>
+                <div>Velocity: <span id="tel-vel">0</span> m/s</div>
+                <div>Fuel: <span id="tel-fuel">0</span>%</div>
+                <div>Phase: <span id="tel-phase">Idle</span></div>
+            </div>
+
+            <div class="sim-ui">
+                <span id="sim-status" style="font-weight: 500; font-size: 0.9rem;">Status: In VAB (Vehicle Assembly Building)</span>
+                <div id="sim-controls"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="log-box" id="mission-log">
+        [00:00] System initialized. Ready for construction.
+    </div>
+
+    <script>
+        // Game State
+        let rocketParts = [];
+        let gameState = 'BUILDING'; // BUILDING, LAUNCHING, SPACE
+        
+        // Physics & Flight Variables
+        let altitude = 0;
+        let velocity = 0;
+        let fuel = 0;
+        let maxFuel = 0;
+        let thrust = 0;
+        let mass = 0;
+        let flightPhase = 'Idle'; // Idle, Ascending, Orbit, Landed, Crashed
+        let distanceToTarget = 100000; // meters to destination planet
+        let traveledDistance = 0;
+
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resize Canvas
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function log(message) {
+            const logBox = document.getElementById('mission-log');
+            const time = new Date().toLocaleTimeString();
+            logBox.innerHTML += `<br>[${time}] ${message}`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function addPart(type) {
+            rocketParts.push(type);
+            updateBuilder();
+        }
+
+        function clearRocket() {
+            rocketParts = [];
+            updateBuilder();
+            log("Rocket assembly cleared.");
+        }
+
+        function updateBuilder() {
+            const stack = document.getElementById('assembly-stack');
+            stack.innerHTML = '';
+            
+            if (rocketParts.length === 0) {
+                stack.innerHTML = '<span style="color: var(--text-muted); font-size: 0.9rem;" id="empty-notice">Your rocket is empty. Add parts below!</span>';
+                document.getElementById('launch-btn').disabled = true;
+            } else {
+                document.getElementById('launch-btn').disabled = false;
+                rocketParts.forEach(part => {
+                    const el = document.createElement('div');
+                    el.className = `rocket-block block-${part}`;
+                    el.innerText = part.toUpperCase();
+                    stack.appendChild(el);
+                });
+            }
+
+            // Calculate stats
+            mass = 1;
+            thrust = 0;
+            maxFuel = 0;
+
+            rocketParts.forEach(part => {
+                if (part === 'capsule') { mass += 2; }
+                if (part === 'fuel') { mass += 4; maxFuel += 100; }
+                if (part === 'engine') { mass += 3; thrust += 150; }
+            });
+
+            fuel = maxFuel;
+
+            document.getElementById('stat-mass').innerText = mass;
+            document.getElementById('stat-thrust').innerText = thrust;
+            document.getElementById('stat-fuel').innerText = maxFuel;
+        }
+
+        function startLaunch() {
+            // Validation: Needs capsule and engine
+            const hasCapsule = rocketParts.includes('capsule');
+            const hasEngine = rocketParts.includes('engine');
+            
+            if (!hasCapsule || !hasEngine) {
+                alert("A valid rocket requires at least 1 Command Capsule and 1 Rocket Engine!");
+                return;
+            }
+
+            gameState = 'LAUNCHING';
+            altitude = 0;
+            velocity = 0;
+            traveledDistance = 0;
+            flightPhase = 'Ascending';
+            
+            document.getElementById('builder-panel').style.opacity = '0.5';
+            document.getElementById('builder-panel').style.pointerEvents = 'none';
+            document.getElementById('telemetry').style.display = 'block';
+            document.getElementById('sim-status').innerText = 'Status: Launch Sequence Initiated';
+            
+            const controls = document.getElementById('sim-controls');
+            controls.innerHTML = '<button class="btn" onclick="triggerThrottle()">Toggle Engines</button>';
+
+            log("Liftoff! Rocket is ascending into the atmosphere.");
+            requestAnimationFrame(updateSimulation);
+        }
+
+        let throttleOn = true;
+        function triggerThrottle() {
+            throttleOn = !throttleOn;
+            log(`Engines ${throttleOn ? 'Throttle UP' : 'Cut Off'}`);
+        }
+
+        function updateSimulation() {
+            if (gameState !== 'LAUNCHING' && gameState !== 'SPACE') return;
+
+            // Physics Calculations
+            let effectiveThrust = (throttleOn && fuel > 0) ? thrust : 0;
+            if (effectiveThrust > 0) {
+                fuel -= 0.2;
+                if (fuel < 0) fuel = 0;
+            }
+
+            let gravity = 1.6;
+            let acceleration = (effectiveThrust / mass) - gravity;
+            
+            velocity += acceleration * 0.1;
+            altitude += velocity * 0.1;
+
+            if (altitude < 0) {
+                altitude = 0;
+                if (velocity < -10) {
+                    flightPhase = 'Crashed';
+                    log("CRASH! Your rocket hit the ground too fast.");
+                    endFlight(false);
+                    return;
+                } else if (velocity < 0) {
+                    flightPhase = 'Landed safely';
+                    log("Successful landing back on Earth!");
+                    endFlight(true);
+                    return;
+                }
+            }
+
+            // Enter Orbit / Space Travel trigger
+            if (altitude > 5000 && flightPhase === 'Ascending') {
+                flightPhase = 'In Deep Space / Orbiting';
+                log("Reached upper atmosphere! Transitioning to deep space travel.");
+            }
+
+            // Update UI telemetry
+            document.getElementById('tel-alt').innerText = Math.max(0, Math.floor(altitude));
+            document.getElementById('tel-vel').innerText = Math.floor(velocity);
+            document.getElementById('tel-fuel').innerText = Math.floor((fuel / maxFuel) * 100) || 0;
+            document.getElementById('tel-phase').innerText = flightPhase;
+
+            // Render Graphics
+            drawScene();
+
+            requestAnimationFrame(updateSimulation);
+        }
+
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Background Stars / Sky gradient
+            let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (altitude < 3000) {
+                grad.addColorStop(0, '#1e3a8a');
+                grad.addColorStop(1, '#93c5fd');
+            } else {
+                grad.addColorStop(0, '#020617');
+                grad.addColorStop(1, '#1e1b4b');
+            }
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Ground if low altitude
+            if (altitude < 1000) {
+                ctx.fillStyle = '#065f46';
+                let groundY = canvas.height - (altitude * 0.5);
+                ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+            }
+
+            // Draw Rocket in Center
+            let rx = canvas.width / 2;
+            let ry = canvas.height / 2;
+
+            ctx.save();
+            ctx.translate(rx, ry);
+
+            // Rocket Body representation
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(-15, -40, 30, 80);
+
+            // Flame effect if engines active
+            if (throttleOn && fuel > 0 && velocity >= 0) {
+                ctx.fillStyle = '#f97316';
+                ctx.beginPath();
+                ctx.moveTo(-10, 40);
+                ctx.lineTo(0, 70 + Math.random() * 20);
+                ctx.lineTo(10, 40);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        function endFlight(success) {
+            gameState = 'BUILDING';
+            document.getElementById('builder-panel').style.opacity = '1';
+            document.getElementById('builder-panel').style.pointerEvents = 'auto';
+            document.getElementById('sim-controls').innerHTML = '';
+            document.getElementById('sim-status').innerText = success ? "Status: Mission Accomplished!" : "Status: Mission Failed!";
+        }
+    </script>
+</body>
+</html>
