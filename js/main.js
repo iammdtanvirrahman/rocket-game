@@ -4,8 +4,12 @@ import { createSimulation } from './simulation.js';
 const builderRoot = document.getElementById('builder-root');
 const simulationRoot = document.getElementById('simulation-root');
 
-createBuilder(builderRoot, (stats) => {
+function showSimulation(stats) {
     createSimulation(simulationRoot, stats);
-});
+}
 
-createSimulation(simulationRoot, getRocketStats());
+// Create builder
+createBuilder(builderRoot, showSimulation);
+
+// Initial simulation screen
+showSimulation(getRocketStats());
